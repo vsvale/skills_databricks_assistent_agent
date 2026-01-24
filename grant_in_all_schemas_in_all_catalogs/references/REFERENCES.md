@@ -1,0 +1,3 @@
+- SHOW GRANTS https://docs.databricks.com/aws/en/sql/language-manual/security-show-grant
+- GRANT https://docs.databricks.com/aws/en/sql/language-manual/security-grant
+- PRIVILEGES TYPES https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges/privileges#privilege-types-by-securable-object-in-unity-catalog
