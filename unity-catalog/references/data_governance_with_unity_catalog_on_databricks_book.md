@@ -1,33 +1,106 @@
 # Preface
 
-Since its introduction in 2021, **Unity Catalog** has become a foundational component of the **Databricks Data Intelligence Platform**.
+## Unity Catalog Overview
+Introduced in **2021**, **Unity Catalog** is a foundational component of the **Databricks Data Intelligence Platform**.
 
-Unity Catalog provides native support for:
-- **Delta** and **Iceberg** catalogs and tables via REST
+## Supported Asset Types
+Unity Catalog provides native, REST-based support for managing:
+- **Delta** catalogs and tables
+- **Iceberg** catalogs and tables
 - **Views**
 - **Cloud storage files**
 - **AI models**
 - **Functions**
 
-As a result, Unity Catalog functions as a **truly multimodal catalog**, delivering a unified experience for **data governance, discovery, and management** across the platform.
+## Functional Role
+Unity Catalog operates as a **multimodal catalog**, enabling:
+- Unified data governance
+- Centralized asset discovery
+- Consistent management of analytical and AI assets
 
-Unity Catalog is now **open source**, reinforcing its role as an open standard for managing data and analytical assets.
+This unified approach spans multiple asset types and workloads within the Databricks platform.
 
----
+## Open Source Status
+Unity Catalog is **open source**, positioning it as:
+- An open standard for data and analytics governance
+- A shared foundation for managing data, AI, and analytical assets across organizations
 
 # Prologue
 
-A **data lake** is a centralized repository designed to store large volumes of data in its **raw, native format**.
+## Data Lake Definition
+A **data lake** is a centralized repository designed to store large volumes of data in its **raw, native format**, without enforcing a predefined schema at ingestion time.
 
-Key characteristics of a data lake include:
-- A **flat architecture**
-- Use of **object storage** as the primary storage layer
-- Support for **structured, semi-structured, and unstructured data**
+### Key Characteristics
+- **Flat architecture** (minimal hierarchical constraints)
+- **Object storage** as the primary storage layer
+- Native support for:
+  - Structured data
+  - Semi-structured data
+  - Unstructured data
 
-A data lake serves as the foundation for large-scale analytics, machine learning, and advanced data processing workloads.
+### Purpose
+A data lake serves as the foundational layer for:
+- Large-scale analytics
+- Machine learning workloads
+- Advanced data processing and experimentation
 
-- The organization had to comply with diverse regulatory requirements, including **GDPR, CCPA, and PCI DSS**. This required implementing different data governance policies and procedures for each region, significantly increasing operational complexity and cost.
+## Regulatory and Governance Context
+The organization operated under multiple regulatory regimes, including:
+- **GDPR**
+- **CCPA**
+- **PCI DSS**
 
-- A **central data platform (CDP) team**, organized in a **hub-and-spoke model**, actively managed data ingestion and transformation across all enterprise datasets. The team was responsible for access control and for building shared **frameworks, tools, and blueprints** for data ingestion and transformation, which domain teams could follow to ensure consistency, quality, and compliance.
+Implications:
+- Region-specific data governance policies
+- Distinct compliance procedures per regulation
+- Increased operational complexity and cost due to regulatory fragmentation
 
-- **Domain teams** focused on their specific business responsibilities, while **data analysts** consumed curated datasets and created **business intelligence (BI)** assets.
+## Organizational Model
+
+### Central Data Platform (CDP) Team
+- Structured under a **hub-and-spoke model**
+- Responsibilities:
+  - Managing enterprise-wide data ingestion
+  - Executing and standardizing data transformations
+  - Enforcing access control and security policies
+  - Developing shared **frameworks, tools, and blueprints** for ingestion and transformation
+- Objective:
+  - Ensure consistency, data quality, and regulatory compliance across domains
+
+### Domain Teams
+- Accountable for domain-specific business logic and data ownership
+- Follow CDP-provided standards and blueprints
+
+### Data Analysts
+- Consume curated and governed datasets
+- Produce **business intelligence (BI)** assets and insights
+
+
+## Data Lifecycle
+
+### 1. Onboarding
+The phase in which data is **collected, generated, or ingested** into a system.
+- Sources may include applications, sensors, logs, external providers, or user input.
+- The goal is to make data available for downstream processing.
+
+### 2. Processing
+The phase focused on **improving data usability, quality, and consistency**.
+Typical operations include:
+- Filtering and cleaning
+- Handling missing or unavailable values
+- Joins and merges across datasets
+- Aggregation
+- Anonymization
+
+Key processing concepts:
+- **Entity Resolution**: Identifying records that refer to the same real-world entity and merging them into a single representation.
+- **Data Harmonization**: Unifying and consolidating data from multiple sources into a coherent, standardized format.
+- **Aggregation as Value**: In some cases, the primary value of data lies in its aggregated form; once aggregates are computed and stored, raw source data may be safely discarded.
+- **Anonymization**: Transforming sensitive data (e.g., Personally Identifiable Information – PII) to prevent identity disclosure while preserving analytical or product utility.
+
+### 3. Active Duty
+The phase in which data is **actively used for a specific purpose**, such as:
+- Analytics and reporting
+- Machine learning models
+- Decision-making processes
+- Data products and services
