@@ -95,4 +95,5 @@ scripts/extract.py
   - Iterate over time. Treat skills as living workflows. Small updates based on real usage can significantly improve results.
   - Separate guidance from automation. Use markdown to explain intent and best practices, and scripts for repeatable actions. Keeping these concerns distinct makes skills easier to maintain and reuse.
 
-For more details, consult the references/REFERENCE.md.
+For more details, consult the references/REFERENCE.md
+- You can search docs in https://context7.com/
