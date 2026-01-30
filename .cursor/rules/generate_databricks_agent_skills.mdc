@@ -60,6 +60,7 @@ description: A description of what this skill does and when to use it.
 
 - (Optional) For more complex skills, you can provide and reference additional resources:
   - Scripts containing executable code that the agent can run are stored in scripts folder
+    - Always put longer codes or ready to use codes in scripts/ and reference it in SKILL.md
     - scripts/
     - Contains executable code that agents can run. Scripts should:
       - Be self-contained or clearly document dependencies
