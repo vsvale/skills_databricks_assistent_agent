@@ -14,6 +14,26 @@
 - **Legacy Hive metastore**: https://docs.databricks.com/aws/en/ldp/hive-metastore.html
 - **LIVE schema (legacy)**: https://docs.databricks.com/aws/en/ldp/live-schema.html
 
+## Streaming Tables
+
+### Overview and Concepts
+- **How streaming tables work**: https://docs.databricks.com/aws/en/ldp/streaming-tables
+- **Use streaming tables in Databricks SQL**: https://docs.databricks.com/aws/en/ldp/dbsql/streaming
+
+### SQL Language Reference
+- **CREATE STREAMING TABLE**: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-create-streaming-table
+- **CREATE STREAMING TABLE (pipelines)**: https://docs.databricks.com/aws/en/ldp/developer/ldp-sql-ref-create-streaming-table
+- **ALTER STREAMING TABLE**: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-alter-streaming-table
+- **REFRESH (MATERIALIZED VIEW or STREAMING TABLE)**: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-refresh-full
+- **DROP TABLE**: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-drop-table
+
+### Streaming Table Features
+- **Load data in pipelines**: https://docs.databricks.com/aws/en/ldp/load.html
+- **Transform data with pipelines**: https://docs.databricks.com/aws/en/ldp/transform.html
+- **Stateful processing with watermarks**: https://docs.databricks.com/aws/en/ldp/stateful.html
+- **Row filters and column masks**: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-row-filter
+- **Table constraints (PRIMARY KEY, FOREIGN KEY)**: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-constraint
+
 ## Developer Reference
 
 - **Pipeline developer reference**: https://docs.databricks.com/aws/en/ldp/developer/
@@ -35,13 +55,19 @@
 ## Flows, Tables, and Ingestion
 
 - **Load and process data with SDP flows**: https://docs.databricks.com/aws/en/ldp/flows.html
-- **How streaming tables work**: https://docs.databricks.com/aws/en/ldp/streaming-tables.html
 - **How materialized views work**: https://docs.databricks.com/aws/en/ldp/materialized-views.html
 - **Stream records with sinks**: https://docs.databricks.com/aws/en/ldp/sinks.html
-- **Load data in pipelines**: https://docs.databricks.com/aws/en/ldp/load.html
 - **Auto Loader**: https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader.html
+- **read_files table-valued function**: https://docs.databricks.com/aws/en/sql/language-manual/functions/read_files.html
+- **read_kafka table-valued function**: https://docs.databricks.com/aws/en/sql/language-manual/functions/read_kafka.html
 - **CDC (AUTO CDC API)**: https://docs.databricks.com/aws/en/ldp/cdc.html
 - **Cloud storage configuration**: https://docs.databricks.com/aws/en/ldp/hive-metastore.html#configure-cloud-storage
+
+## Unity Catalog Volumes
+
+- **Unity Catalog Volumes overview**: https://docs.databricks.com/aws/en/volumes/
+- **Create and manage volumes**: https://docs.databricks.com/aws/en/volumes/manage-volumes.html
+- **Work with files in volumes**: https://docs.databricks.com/aws/en/volumes/work-with-files.html
 
 ## Configuration and Compute
 
@@ -65,6 +91,7 @@
 - **Pipelines in Databricks SQL**: https://docs.databricks.com/aws/en/ldp/dbsql/dbsql-for-ldp.html
 - **Delta Lake in Databricks**: https://docs.databricks.com/aws/en/delta/
 - **Procedural vs. declarative data processing**: https://docs.databricks.com/aws/en/data-engineering/procedural-vs-declarative.html
+- **Liquid clustering**: https://docs.databricks.com/aws/en/delta/clustering.html
 
 ## API and CLI
 
@@ -76,3 +103,8 @@
 
 - **Lakeflow Spark Declarative Pipelines product / pricing**: https://www.databricks.com/product/pricing/lakeflow-declarative-pipelines
 - **Runtime channels (SDP)**: https://docs.databricks.com/aws/en/release-notes/dlt/#runtime-channels
+
+## Community Resources
+
+- **Databricks Community - Data Engineering**: https://community.databricks.com/t5/data-engineering/bd-p/data-engineering
+- **Create flow for streaming table (community discussion)**: https://community.databricks.com/t5/data-engineering/create-flow-for-streaming-table/td-p/119158

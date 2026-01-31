@@ -14,6 +14,7 @@ Use these skills in **Databricks** (Assistant in the workspace) or adapt them fo
 | **[databricks_cli](databricks_cli/)** | Install and use the Databricks CLI: auth, profiles, and common commands (clusters, jobs, workspace, Unity Catalog, bundles). |
 | **[unity-catalog](unity-catalog/)** | Manage Unity Catalog: catalogs, schemas, tables, permissions, external locations, storage credentials, Delta Sharing, and best practices. |
 | **[lakeflow-sdp](lakeflow-sdp/)** | Build and run Lakeflow Spark Declarative Pipelines: streaming tables, materialized views, expectations, Auto Loader, CDC, and ETL in SQL/Python. |
+| **[databricks-demo](databricks-demo/)** | Install Databricks Lakehouse demos with dbdemos: notebooks, SDP pipelines, DBSQL dashboards, ML models; list/install by category, use current cluster or UC catalog/schema. |
 | **[grant_in_all_schemas_in_all_catalogs](grant_in_all_schemas_in_all_catalogs/)** | Automate grants across catalogs and schemas for a group (with safe exclusions for system/sample catalogs). Includes a ready-to-run Python script. |
 | **[generate_skills](generate_skills/)** | *Meta-skill:* how to create new Databricks Assistant skills (structure, frontmatter, references, scripts) following this repo’s conventions. |
 
@@ -67,6 +68,9 @@ The repo includes a `databricks.yml` [Asset Bundle](https://docs.databricks.com/
 ├── lakeflow-sdp/                     # Skill: declarative pipelines (SDP)
 │   ├── SKILL.md
 │   └── references/
+├── databricks-demo/                  # Skill: dbdemos install, list, options
+│   ├── SKILL.md
+│   └── references/
 ├── grant_in_all_schemas_in_all_catalogs/   # Skill: bulk grants + script
 │   ├── SKILL.md
 │   ├── references/
@@ -89,5 +93,6 @@ Every skill has a **name** (matches folder), a **description** (what it does + w
 - [Databricks Connect for Python](https://docs.databricks.com/en/dev-tools/databricks-connect/python/)
 - [Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/)
 - [Lakeflow Spark Declarative Pipelines](https://docs.databricks.com/aws/en/ldp/)
+- [Databricks Tutorials (dbdemos)](https://www.databricks.com/resources/demos/tutorials) · [dbdemos on GitHub](https://github.com/databricks-demos/dbdemos)
 
 ---
