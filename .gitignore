@@ -1,2 +1,18 @@
+# Databricks
+.databricks/
 
-.databricks
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
