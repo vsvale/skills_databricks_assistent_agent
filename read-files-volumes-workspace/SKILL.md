@@ -25,7 +25,7 @@ This skill provides patterns and examples for reading files in Databricks from *
 
 For Spark to read workspace files you must use the **fully qualified path** with the `file:` scheme. Getting the current path in a notebook: `f"file:{os.getcwd()}/data/file.json"`.
 
-References: [Work with files on Databricks](https://docs.databricks.com/aws/en/files/), [Programmatically interact with workspace files](https://docs.databricks.com/aws/en/files/workspace-interact).
+See [the reference guide](references/REFERENCES.md) for details.
 
 ## JSON
 
@@ -223,11 +223,3 @@ Run or adapt these from the skill folder:
 - **Large or evolving schemas**: Use `rescuedDataColumn` so unparsed or extra columns are kept in a single column instead of failing.
 - **Explicit schema**: Pass `.schema(schema)` or `schema` option in SQL to avoid inference and control types.
 
-## References
-
-- [JSON file (Databricks)](https://docs.databricks.com/aws/en/query/formats/json)
-- [Query JSON strings (semi-structured)](https://docs.databricks.com/aws/en/semi-structured/json)
-- [Work with files on Databricks](https://docs.databricks.com/aws/en/files/)
-- [Programmatically interact with workspace files](https://docs.databricks.com/aws/en/files/workspace-interact)
-- [PySpark DataFrameReader.json](https://api-docs.databricks.com/python/pyspark/latest/pyspark.sql/api/pyspark.sql.DataFrameReader.json.html)
-- [parse_json (Databricks SQL)](https://docs.databricks.com/gcp/en/sql/language-manual/functions/parse_json)

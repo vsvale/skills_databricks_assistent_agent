@@ -1,5 +1,5 @@
 ---
-name: grants_in_all_catalogs_in_schema_to_group
+name: grant-catalog-schema-permissions
 description: Automates granting permissions across multiple catalogs and schemas, ensuring consistent access control for a specified group.
 ---
 

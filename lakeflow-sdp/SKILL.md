@@ -94,59 +94,21 @@ Streaming tables are Delta tables with extra support for streaming or incrementa
 
 Use Unity Catalog Volumes instead of direct cloud storage paths for better governance and security:
 
-```sql
--- JSON files from a volume
-CREATE OR REFRESH STREAMING TABLE credit_bureau_bronze
-AS SELECT * FROM STREAM read_files(
-  '/Volumes/my_catalog/my_schema/my_volume/credit_bureau',
-  format => 'json',
-  inferColumnTypes => true
-);
-
--- CSV files with schema hints for date columns
-CREATE OR REFRESH STREAMING TABLE customer_bronze
-AS SELECT * FROM STREAM read_files(
-  '/Volumes/my_catalog/my_schema/my_volume/customers',
-  format => 'csv',
-  header => true,
-  inferSchema => true,
-  inferColumnTypes => true,
-  schemaHints => 'join_date DATE, dob DATE'
-);
-```
+See [scripts/create_streaming_table_unity_catalog_volumes.sql](scripts/create_streaming_table_unity_catalog_volumes.sql) for examples of creating streaming tables from JSON and CSV files in Unity Catalog Volumes.
 
 #### With Data Quality Expectations
 
-```sql
-CREATE OR REFRESH STREAMING TABLE validated_events_bronze (
-  CONSTRAINT valid_id EXPECT (id IS NOT NULL) ON VIOLATION DROP ROW,
-  CONSTRAINT valid_timestamp EXPECT (event_ts IS NOT NULL) ON VIOLATION FAIL UPDATE
-)
-AS SELECT * FROM STREAM read_files(
-  '/Volumes/my_catalog/my_schema/my_volume/events',
-  format => 'json',
-  inferColumnTypes => true
-);
-```
+See [scripts/create_streaming_table_expectations.sql](scripts/create_streaming_table_expectations.sql) for an example of a streaming table with data quality expectations.
 
 **Note:** Expectations in pipelines use `CONSTRAINT name EXPECT (condition) ON VIOLATION action` syntax. The constraint name must be unique per dataset.
 
 #### With Explicit Schema
 
-```sql
-CREATE OR REFRESH STREAMING TABLE typed_events_bronze (
-  id INT,
-  ts TIMESTAMP,
-  event_type STRING,
-  payload STRING
-)
-AS SELECT *
-FROM STREAM read_files(
-  '/Volumes/my_catalog/my_schema/my_volume/events',
-  format => 'csv',
-  schema => 'id INT, ts TIMESTAMP, event_type STRING, payload STRING'
-);
-```
+See [scripts/create_streaming_table_explicit_schema.sql](scripts/create_streaming_table_explicit_schema.sql) for an example of a streaming table with an explicit schema.
+
+#### With Row Filters and Column Masks
+
+See [scripts/create_streaming_table_row_filters_masks.sql](scripts/create_streaming_table_row_filters_masks.sql) for an example of a streaming table with row filters and column masks.
 
 ### Streaming Table Options
 
@@ -175,17 +137,7 @@ FROM STREAM read_files(
 
 #### Scheduled Refresh (Time-based)
 
-```sql
--- Refresh every hour
-CREATE OR REFRESH STREAMING TABLE hourly_data
-SCHEDULE EVERY 1 HOUR
-AS SELECT * FROM STREAM read_files('/Volumes/catalog/schema/vol/data');
-
--- Refresh with cron expression
-CREATE OR REFRESH STREAMING TABLE daily_midnight
-SCHEDULE CRON '0 0 0 * * ?' AT TIME ZONE 'America/Los_Angeles'
-AS SELECT * FROM STREAM read_files('/Volumes/catalog/schema/vol/data');
-```
+See [scripts/create_streaming_table_schedule.sql](scripts/create_streaming_table_schedule.sql) for examples of scheduled refreshes (hourly, cron).
 
 **Accepted intervals for SCHEDULE EVERY:**
 | Time Unit | Valid Range |
@@ -198,17 +150,7 @@ AS SELECT * FROM STREAM read_files('/Volumes/catalog/schema/vol/data');
 
 Automatically refresh when upstream data changes:
 
-```sql
--- Refresh when source updates (minimum 1 minute between refreshes)
-CREATE STREAMING TABLE triggered_data
-TRIGGER ON UPDATE
-AS SELECT * FROM STREAM source_table;
-
--- Limit refresh frequency
-CREATE STREAMING TABLE throttled_data
-TRIGGER ON UPDATE AT MOST EVERY INTERVAL 5 MINUTES
-AS SELECT * FROM STREAM source_table;
-```
+See [scripts/create_streaming_table_trigger.sql](scripts/create_streaming_table_trigger.sql) for examples of trigger-based refreshes.
 
 **Trigger limitations:**
 - Maximum 10 upstream data sources per streaming table
@@ -223,67 +165,15 @@ Use `ALTER STREAMING TABLE` to modify schedules, triggers, row filters, tags, an
 
 #### Schedule and Trigger Management
 
-```sql
--- Add a schedule
-ALTER STREAMING TABLE my_table
-ADD SCHEDULE EVERY 1 HOUR;
-
--- Modify existing schedule
-ALTER STREAMING TABLE my_table
-ALTER SCHEDULE EVERY 5 MINUTES;
-
--- Change to trigger-based refresh
-ALTER STREAMING TABLE my_table
-ALTER TRIGGER ON UPDATE AT MOST EVERY INTERVAL 1 HOUR;
-
--- Drop the schedule
-ALTER STREAMING TABLE my_table
-DROP SCHEDULE;
-```
+See [scripts/alter_streaming_table_schedule.sql](scripts/alter_streaming_table_schedule.sql) for examples of managing schedules and triggers.
 
 #### Column Management
 
-```sql
--- Add a column comment
-ALTER STREAMING TABLE my_table
-ALTER COLUMN column_name COMMENT 'Description of column';
-
--- Set a column mask (for data anonymization)
-ALTER STREAMING TABLE my_table
-ALTER COLUMN ssn_column SET MASK catalog.schema.mask_function;
-
--- Drop a column mask
-ALTER STREAMING TABLE my_table
-ALTER COLUMN ssn_column DROP MASK;
-
--- Set column tags
-ALTER STREAMING TABLE my_table
-ALTER COLUMN column_name SET TAGS ('pii' = 'true', 'classification' = 'sensitive');
-
--- Unset column tags
-ALTER STREAMING TABLE my_table
-ALTER COLUMN column_name UNSET TAGS ('pii');
-```
+See [scripts/alter_streaming_table_columns.sql](scripts/alter_streaming_table_columns.sql) for examples of column management (comments, masks, tags).
 
 #### Row Filters and Table Tags
 
-```sql
--- Set a row filter (for fine-grained access control)
-ALTER STREAMING TABLE my_table
-SET ROW FILTER catalog.schema.filter_function ON (region_column);
-
--- Drop a row filter
-ALTER STREAMING TABLE my_table
-DROP ROW FILTER;
-
--- Set table tags
-ALTER STREAMING TABLE my_table
-SET TAGS ('env' = 'production', 'team' = 'data-eng');
-
--- Unset table tags
-ALTER STREAMING TABLE my_table
-UNSET TAGS ('env', 'team');
-```
+See [scripts/alter_streaming_table_row_filters.sql](scripts/alter_streaming_table_row_filters.sql) for examples of managing row filters and table tags.
 
 **Notes:**
 - Row filters and column masks added after creation only propagate to downstream tables after the next update
@@ -294,18 +184,14 @@ UNSET TAGS ('env', 'team');
 
 #### Manual Refresh
 
-```sql
--- Synchronous refresh (blocks until complete)
-REFRESH STREAMING TABLE my_table;
-
--- Asynchronous refresh (returns immediately)
-REFRESH STREAMING TABLE my_table ASYNC;
-
--- Full refresh (reprocess all data)
-REFRESH STREAMING TABLE my_table FULL;
-```
+See [scripts/refresh_streaming_table.sql](scripts/refresh_streaming_table.sql) for examples of manual refresh modes (SYNC, ASYNC, FULL).
 
 #### How Refresh Works
+
+**Refresh Modes:**
+- **SYNC (Default)**: Blocks until the refresh is complete.
+- **ASYNC**: Triggered as a background job; returns a pipeline link immediately.
+- **FULL**: Truncates and rebuilds the table from scratch.
 
 **Incremental Refresh (Default):**
 - Only evaluates new rows that arrived since the last update
@@ -452,44 +338,8 @@ DESCRIBE EXTENDED my_streaming_table;
 
 ## SQL Syntax (Summary)
 
-**Materialized view:**
-```sql
-CREATE MATERIALIZED VIEW my_catalog.my_schema.my_mv
-AS SELECT * FROM my_catalog.my_schema.source_table;
-```
+See [references/REFERENCES.md](references/REFERENCES.md) for detailed syntax or the scripts directory for examples.
 
-**Streaming table** (use `STREAM` for streaming read from source):
-```sql
-CREATE STREAMING TABLE my_catalog.my_schema.my_streaming_table
-AS SELECT * FROM STREAM my_catalog.my_schema.append_only_source;
-```
-
-**Auto Loader** (streaming table from Unity Catalog Volume):
-```sql
-CREATE STREAMING TABLE my_schema.raw_events
-AS SELECT * FROM STREAM read_files(
-  '/Volumes/my_catalog/my_schema/my_volume/events',
-  format => 'json',
-  inferColumnTypes => true
-);
-```
-
-**Expectations** (constraint + action):
-```sql
-CREATE STREAMING TABLE my_schema.validated_events (
-  CONSTRAINT valid_id EXPECT (id IS NOT NULL) ON VIOLATION DROP ROW
-)
-AS SELECT * FROM STREAM my_schema.raw_events;
-```
-
-Actions: `ON VIOLATION WARN` (default, keep record), `ON VIOLATION DROP ROW`, `ON VIOLATION FAIL UPDATE`.
-
-**Private table** (pipeline-internal only):
-```sql
-CREATE PRIVATE MATERIALIZED VIEW internal_staging AS SELECT ...
-```
-
-**Parameters:** Use `SET key = value;` and reference in queries with string interpolation as defined in the pipeline SQL reference.
 
 ## Python (Summary)
 

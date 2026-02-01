@@ -1,15 +1,8 @@
 ---
-name: generate_databricks_agent_skills
+name: generate-databricks-agent-skills
 description: Create skills to extend the Databricks Assistant with specialized capabilities. Skills follow the open standard of Agent Skills. Skills package domain-specific knowledge and workflows that the Assistant can load when relevant to perform specific tasks. Skills can include guidance, best practices, reusable code, and executable scripts. Skills should be tailored for domain-specific tasks. With skills, you can provide greater context (such as scripts, examples, and other resources) for a task than you can with instructions.
 alwaysApply: false
 ---
-
-# Databricks Assistant Agent Skills
-
-## Reference
-
-<https://docs.databricks.com/aws/en/assistant/skills>
-<https://agentskills.io/specification>
 
 ## Skill
 
@@ -60,8 +53,8 @@ description: A description of what this skill does and when to use it.
 
 - (Optional) For more complex skills, you can provide and reference additional resources:
   - Scripts containing executable code that the agent can run are stored in scripts folder
-    - Always put longer codes or ready to use codes in scripts/ and reference it in SKILL.md
     - scripts/
+    - Always put longer codes or ready to use codes in scripts/ and reference it in SKILL.md
     - Contains executable code that agents can run. Scripts should:
       - Be self-contained or clearly document dependencies
       - Include helpful error messages
@@ -103,4 +96,5 @@ scripts/extract.py
   - Iterate over time. Treat skills as living workflows. Small updates based on real usage can significantly improve results.
   - Separate guidance from automation. Use markdown to explain intent and best practices, and scripts for repeatable actions. Keeping these concerns distinct makes skills easier to maintain and reuse.
 
+For more details, consult the references/REFERENCE.md
 - You can search docs in https://context7.com/

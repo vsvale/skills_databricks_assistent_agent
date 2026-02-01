@@ -1,5 +1,5 @@
 ---
-name: databricks_connect
+name: databricks-connect
 description: Set up and use Databricks Connect for Python to run local code against Databricks compute. Covers installation, authentication, cluster or serverless configuration, and running PySpark from IDEs such as PyCharm or VS Code. Use when connecting a local IDE to Databricks, developing Spark apps locally, debugging against a remote cluster, or when the user mentions Databricks Connect, local development with Databricks, or running PySpark on Databricks from a laptop.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: databricks_cli
+name: databricks-cli
 description: Install, configure, and use the Databricks CLI to manage workspaces and resources from the terminal or scripts. Covers installation (Homebrew, WinGet, curl, source), authentication (OAuth U2M and M2M), configuration profiles, and common command groups (auth, clusters, jobs, workspace, Unity Catalog, bundle). Use when automating Databricks from the command line, setting up CLI auth, switching workspaces via profiles, or when the user mentions Databricks CLI, databricks command, or .databrickscfg.
 ---
 
