@@ -41,8 +41,6 @@ COMMENT 'Schema with managed storage';
 
 ### Creating Tables
 
-Tables can be managed (Unity Catalog manages the data) or external (data stored externally).
-
 ```sql
 -- Create a managed table
 CREATE TABLE IF NOT EXISTS my_catalog.my_schema.my_table (
@@ -50,7 +48,16 @@ CREATE TABLE IF NOT EXISTS my_catalog.my_schema.my_table (
   name STRING,
   created_at TIMESTAMP
 )
+CLUSTER BY AUTO
 COMMENT 'Managed table example';
+
+Tables can be managed (Unity Catalog manages the data) or external (data stored externally).
+Databricks recommends using Unity Catalog managed tables with default settings for all new tables.
+Databricks recommends using clustering for table layout.
+Databricks recommends using predictive optimization to automatically run OPTIMIZE and VACUUM for tables.
+Auto compaction and optimized writes are always enabled for MERGE, UPDATE, and DELETE operations
+Background auto compaction is available for Unity Catalog managed tables, so remove the Spark config `spark.databricks.delta.autoCompact.enabled` from computes and tables `ALTER TABLE <table_name> UNSET TBLPROPERTIES (delta.autoOptimize.autoCompact)`
+To apply a TBLPROPERTIE to all Unity Catalog tables run scripts/apply_tbproperties_to_all_tables.py. To unset a TBLPROPERTIE to all Unity Catalog tables run scripts/remove_tblproperties_to_all_tables.py
 
 -- Create an external table
 CREATE TABLE IF NOT EXISTS my_catalog.my_schema.external_table

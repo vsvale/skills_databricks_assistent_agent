@@ -14,6 +14,9 @@
 - Migration Guide: https://docs.databricks.com/aws/en/data-governance/unity-catalog/migrate.html
 - Unity Catalog git: https://github.com/unitycatalog/unitycatalog
 - Unity Catalog Open Souce documentation: https://docs.unitycatalog.io/
+- Use liquid clustering for tables: https://docs.databricks.com/aws/en/delta/clustering
+- Predictive optimization for Unity Catalog managed tables: https://docs.databricks.com/aws/en/optimizations/predictive-optimization
+
 
 ## SQL Reference
 

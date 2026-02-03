@@ -1,0 +1,5 @@
+- IDENTIFIER clause: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-names-identifier-clause
+- CLUSTER BY clause: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-cluster-by
+- TBLPROPERTIES: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-tblproperties
+- Table properties reference: https://docs.databricks.com/aws/en/delta/table-properties
+- Optimized writes: https://docs.databricks.com/aws/en/delta/tune-file-size#optimized-writes

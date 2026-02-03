@@ -1,0 +1,1 @@
+This skill does not apply to Unity Catalog managed tables
