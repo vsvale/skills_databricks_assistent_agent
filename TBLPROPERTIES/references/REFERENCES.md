@@ -1,3 +1,0 @@
-- TBLPROPERTIES: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-tblproperties
-- Table properties reference: https://docs.databricks.com/aws/en/delta/table-properties
-- Control data file size: https://docs.databricks.com/aws/en/delta/tune-file-size

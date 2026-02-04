@@ -1,8 +1,7 @@
 ---
-alwaysApply: true
+alwaysApply: false
+description: 
 ---
-
-
 ## 1. Code Organization and Structure
 
 ### 1.1. Directory Structure Best Practices
