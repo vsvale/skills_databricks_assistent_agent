@@ -30,6 +30,22 @@ bronzeWriter = (df_transformed_Bronze.writeStream
 bronzeWriter.toTable(bronzeTable).awaitTermination()
 ```
 
+**Pattern: Reprocess & Truncate (Volumes vs Tables)**
+*Before*:
+```python
+spark.sql(f"TRUNCATE TABLE delta.`{bronzePath}`")
+dbutils.fs.rm(bronzeCheckpoint, True)
+```
+*After*:
+```python
+# 1. Clean Checkpoint in Volume
+dbutils.fs.rm(bronzeCheckpoint, True)
+dbutils.fs.mkdirs(bronzeCheckpoint) # Re-create empty directory
+
+# 2. Truncate Managed Table
+spark.sql(f"TRUNCATE TABLE {bronzeTable}")
+```
+
 **Pattern: Helper Function Refactoring (Wrapper Update)**
 If you use a shared wrapper function, update it to support `.toTable()`:
 
@@ -89,6 +105,21 @@ rawPath   = "s3://{}".format(bucketRaw)
 rawPath = "/Volumes/observability_prd/raw/ecs-observability-datadog-logging-prd/auth/back/"
 ```
 
+**Pattern: Read Stream (Path vs Volume)**
+*Before*:
+```python
+rawDF = read_stream_raw(spark, rawPathDay, schema_bronze_back)
+```
+*After*:
+```python
+rawDF = (
+  spark.readStream.format("json")
+        .schema(schema_bronze_back)
+        .options(maxBytesPerTrigger=str(5 * 1024 * 1024 * 1024))
+        .load(rawPathDay) # rawPathDay is now a Volume path
+)
+```
+
 **Pattern: Autoloader with SQS**
 *Before*:
 ```python
@@ -105,10 +136,33 @@ rawPath = "/Volumes/observability_prd/raw/ecs-observability-datadog-logging-prd/
 ```python
 goldPath = "s3://bucket/path"
 goldTable = DeltaTable.forPath(spark, goldPath)
+# OR
+bronzeDF = read_stream_delta(spark, bronzePath)
 ```
 *After*:
 ```python
 goldTable = spark.table('corp_prd.sensitive.table_name')
+# OR
+bronzeDF = spark.readStream.table("auth_prd.bronze.tb_source_back")
+```
+
+**Pattern: Table Creation (DDL)**
+*Before*:
+```python
+# Checks DeltaTable.isDeltaTable... then:
+spark.sql(f"""
+    CREATE TABLE IF NOT EXISTS {tableName} ({schema})
+    USING delta LOCATION '{silverPath}'
+    CLUSTER BY (col)
+""")
+```
+*After*:
+```python
+# Managed Table - No LOCATION
+spark.sql(f"""
+    CREATE TABLE IF NOT EXISTS auth_prd.silver.tb_{name} ({schema})
+    CLUSTER BY (col)
+""")
 ```
 
 **Pattern: SQL Reference**

@@ -26,11 +26,11 @@ See [references/strategy.md](references/strategy.md) for detailed scenarios.
 ### Bronze Layer: External to Managed Tables
 - **Before**: `spark.read.load("s3://...")` and `write.save("s3://...")`.
 - **After**: `spark.read.table("catalog.schema.table")` and `.saveAsTable("catalog.schema.table")`.
-- **Key Change**: Use **Managed Tables** by default. Avoid `VACUUM`/`OPTIMIZE` commands in code (enable Predictive Optimization).
+- **Key Change**: Use **Managed Tables** by default (No `LOCATION` in DDL). Avoid `VACUUM`/`OPTIMIZE` commands in code (enable Predictive Optimization).
 
 ### Silver Layer: Path References to Table References
-- **Before**: Reading Bronze from S3 path.
-- **After**: Reading Bronze from Unity Catalog Table (`spark.read.table()`).
+- **Before**: Reading Bronze from S3 path; using helper functions (`read_stream_delta`).
+- **After**: Reading Bronze from Unity Catalog Table (`spark.readStream.table()`); using native APIs.
 
 ### Checkpoints
 - **Before**: S3 bucket for checkpoints.
