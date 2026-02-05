@@ -57,3 +57,8 @@ See [references/best_practices.md](references/best_practices.md) for the full li
 - **Forbidden**: Hardcoded S3 paths in Unity-enabled clusters (unless using External Locations explicitly).
 - **Forbidden**: `%run` for orchestration (use Job Tasks).
 - **Forbidden**: Storing production code in Personal Workspace.
+
+## 6. Examples
+See [scripts/](scripts/) for full example files.
+- `scripts/before_00_operations.py` vs `scripts/after_00_operations.py`
+
