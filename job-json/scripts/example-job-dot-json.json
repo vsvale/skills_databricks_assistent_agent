@@ -1,0 +1,83 @@
+{
+        "name": "gcp_ga4_to_bronze_v2_uc",
+        "email_notifications": {
+            "on_failure": "squad_aquisicao@experian.com",
+            "no_alert_for_skipped_runs": false
+        },
+        "webhook_notifications": {},
+        "timeout_seconds": 0,
+		    "schedule": {
+            "quartz_cron_expression": "33 5 21 * * ?",
+            "timezone_id": "UTC",
+            "pause_status": "UNPAUSED"
+        },
+        "max_concurrent_runs": 1,
+        "tasks": [
+            {
+                "task_key": "extract_ingest_to_bronze",
+                "notebook_task": {
+                    "notebook_path": "gcp_ga4_to_bronze_v2_uc/src/databricks/workspace/ingest_ga4_bq_to_bronze",
+                    "base_parameters": {
+                     "number_of_messages": "1"
+                    },
+                    "source": "GIT"
+                },
+				"job_cluster_key": "Shared_job_cluster",
+                "timeout_seconds": 0,
+                "email_notifications": {}
+            },
+            {
+                "task_key": "Ingest_to_silver",
+                "depends_on": [
+                    {
+                        "task_key": "extract_ingest_to_bronze"
+                    }
+                ],
+                "notebook_task": {
+                    "notebook_path": "gcp_ga4_to_bronze_v2_uc/src/databricks/workspace/ingest_append_silver_by_bronze",
+                    "base_parameters": {
+                     "number_of_messages": "1"
+                    },
+                    "source": "GIT"
+                },
+                "job_cluster_key": "Shared_job_cluster",
+                "timeout_seconds": 0,
+                "email_notifications": {}
+            }
+        ],
+        "job_clusters": [
+            {
+                "job_cluster_key": "Shared_job_cluster",
+                "new_cluster": {
+                    "cluster_name": "",
+                    "spark_version": "16.4.x-scala2.12",
+                    "instance_pool_id": "0904-143723-fame4-pool-mx9sp4pc",
+                    "policy_id": "001F0E3652D6CF50",
+                    "driver_instance_pool_id": "0904-143724-entry182-pool-ops4qzv4",
+                    "autoscale": {
+                    "min_workers": 1,
+                    "max_workers": 8
+                }
+                }
+            }
+        ],
+       "tags": {
+        "BU": "ECS",
+        "BusinessServices": "LNO",
+        "Environment": "PRD",
+        "CreatedBy": "CRM",
+        "JobType": "ETL",
+        "Environment": "PRD",
+        "GitSource": "GITLAB",
+        "datadog": "TRUE",
+        "Data_Category": "MEDIA"
+    },
+      "git_source": {
+        "git_url": "https://gitlab.ecsbr.net/dataops/core/dataops-core-mkt",
+        "git_provider": "gitLab",
+        "git_branch": "main"
+    },
+  "run_as": {
+    "user_name": "ecs_ci_cd_datalake@br.experian.com"
+  }
+    }
