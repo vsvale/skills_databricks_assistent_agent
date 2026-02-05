@@ -13,6 +13,10 @@
   - **Solution**: Migrate Hive tables to UC or use CTAS to materialize the view (requires a job to update).
 
 ## Delta & Streaming
+- **Error**: `AnalysisException: Table or view not found: catalog.schema.table`
+  - **Context**: Occurs when switching from `spark.read.load(path)` to `spark.table(name)`.
+  - **Solution**: Ensure the table is created in Unity Catalog. The error message is different from the legacy `Path does not exist`.
+
 - **Error**: `[DELTA_UNSUPPORTED_OUTPUT_MODE] ... does not support Update output mode`
   - **Solution**: Change output mode to `append` or use `foreachBatch` with `merge`.
 - **Error**: `com.amazon.deequ... NoSuchMethodError: ...XxHash64Function`

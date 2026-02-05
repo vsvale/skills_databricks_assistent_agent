@@ -3,6 +3,14 @@
 ## Code Formatting
 - **Line Breaks**: Use parentheses `()` instead of backslash `\` for line breaks.
 - **Imports**: Standardize imports. Do NOT use `import *`. Import only what is needed. Group imports.
+- **Defensive Imports**: Wrap custom/legacy library imports in try-except blocks to prevent job failures during migration or if libraries are missing in the new environment.
+  ```python
+  try:
+      from cryptography_library.operations import SparkCryptography
+      cryptography = SparkCryptography(spark)
+  except ImportError:
+      print("Cryptography library not available - check Volume installation")
+  ```
 - **Global Variables**: Do NOT use global variables inside functions. Pass them as arguments.
 
 **Example (Line Breaks)**:

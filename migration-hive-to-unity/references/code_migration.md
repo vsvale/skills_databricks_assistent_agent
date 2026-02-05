@@ -30,6 +30,37 @@ bronzeWriter = (df_transformed_Bronze.writeStream
 bronzeWriter.toTable(bronzeTable).awaitTermination()
 ```
 
+**Pattern: Helper Function Refactoring (Wrapper Update)**
+If you use a shared wrapper function, update it to support `.toTable()`:
+
+*Before*:
+```python
+def create_stream_writer(dataframe, checkpoint, name, trigger_once, mergeSchema):
+    # ... setup stream_writer ...
+    return stream_writer # Returns DataStreamWriter
+# Usage: create_stream_writer(...).start(path)
+```
+*After*:
+```python
+def create_stream_writer(dataframe, checkpoint, name, trigger_once, mergeSchema, toTable):
+    # ... setup stream_writer ...
+    return stream_writer.toTable(toTable) # Returns StreamingQuery
+# Usage: create_stream_writer(..., toTable="catalog.schema.table")
+```
+
+**Pattern: Namespace Migration (Hive to Unity)**
+*Before*:
+```python
+spark.catalog.tableExists(f"db_auth_silver.tb_{table}")
+spark.sql(f"select * from db_auth_silver.tb_{table}")
+```
+*After*:
+```python
+spark.catalog.tableExists(f"auth_prd.silver.tb_{table}")
+spark.sql(f"select * from auth_prd.silver.tb_{table}")
+```
+
+
 **Pattern: Shared Utils**
 *Before*:
 ```python
