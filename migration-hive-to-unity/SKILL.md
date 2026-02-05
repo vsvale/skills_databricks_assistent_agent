@@ -44,6 +44,7 @@ See [references/code_migration.md](references/code_migration.md) for detailed co
 - **Streaming**: Replace `Trigger.Once` with `Trigger.AvailableNow`.
 - **Explicit Writers**: Replace custom wrappers (`create_stream_writer`) with native `.writeStream` syntax.
 - **File Deletion**: Replace `dbutils.fs.rm` on tables with `TRUNCATE` or SQL operations.
+- **Job Config**: Update `job.json` to use **Cluster Policies** (`policy_id`) and **Instance Pools** (`instance_pool_id`) instead of raw AWS attributes. Update `git_source` to the Unified Repo. See [references/job_config_migration.md](references/job_config_migration.md).
 
 ## 4. Best Practices
 - **Code Style**: Use `()` for line breaks, standard imports, no global variables.

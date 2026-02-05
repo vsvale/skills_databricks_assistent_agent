@@ -11,6 +11,7 @@
 | [compute_requirements.md](compute_requirements.md) | Cluster access modes (Standard/Dedicated) and requirements. |
 | [tagging_standards.md](tagging_standards.md) | Mandatory tagging standards for Jobs and Clusters. |
 | [unified_repo_structure.md](unified_repo_structure.md) | Standardized directory structure for Git Repositories. |
+| [job_config_migration.md](job_config_migration.md) | JSON configuration patterns for migrating Jobs (Policies, Pools, Git Source). |
 | [liquid_clustering.md](liquid_clustering.md) | Usage of Liquid Clustering (`CLUSTER BY`) instead of Partitioning. |
 | [library_management.md](library_management.md) | Managing libraries via Volumes. |
 | [frequent_errors.md](frequent_errors.md) | Common migration errors and their solutions. |

@@ -29,5 +29,7 @@ Shift from 1:1 (Repo:Job) to **Unified Repositories per Product**.
 1. Create folder in Unified Repo.
 2. Clone original repo.
 3. Move `src` folder to new location.
-4. Update `job.json` to point to new path.
+4. Update `job.json`:
+   - Update `git_source.git_url` to the new Unified Repo URL.
+   - Update `notebook_task.notebook_path` to include the project folder prefix.
 5. Update CI/CD pipeline.
