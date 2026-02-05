@@ -15,6 +15,7 @@ Choose the strategy based on the table status:
 - **Workspace**: For user-managed jobs. User must migrate logic to Repos/Unity.
 
 See [references/strategy.md](references/strategy.md) for detailed scenarios.
+See [references/unity_catalog_standards.md](references/unity_catalog_standards.md) for catalog, schema, and volume standards.
 
 ## 2. Core Migration Patterns (Before -> After)
 
