@@ -44,10 +44,33 @@
 - Since data needs to be transfered across the network, it is crucial that tasks run efficiently
 - External table: mount a file to query it, metastore do not manage it. When you drop it it only removes the metadata, leaviung the underlying data intact
 - Managed table: Fully controlled by metastore. When you drop it delete both the tables metadata  and its underlying data
-- Parquet: columnar storage open source file format used in Delta and Iceberg. Beneficial for analytical queries involving aggregations, filtering and sorting of large datasets. They enhance performance and efficiency by drastically reducing I/O operatioins and the amount of data loaded into memory. Columnar formats offer better data compression, wich saves storage space and reduces the costs associated with managing large volumes of data
 - Hive metastore is a central repository that store metadata abount the tables, columns and partitions, this metadata includes the data schema and data location
 - disk seeking is time-consuming and significantly slows down the overall operation
 
 ### Spark
 - This framework was designed to facilitate large-scale data processing more efficiently by storing data in memory rather than reading it from disk for every operation
 - Spark needs to read data from the disks to bring it into memory, when restarting the cluster, all in-memory data is lost, and the data must be reloaded
+- By 2013, the Spark project to ensure its long term sustainability and vendor independence, the ream decided to contribute Spark as open source to the Apache Softare Foundation
+- Spark 1.0 in 2014, Spark 2.0 in 2016, Spark 3.0 in 2020 and Spark 4.0 in 2025
+- it can operate independently in a cluster of virtual machines or within containers managed by Kubernets
+
+### Data lakes
+- Data lakes are robust solutions for storing massive volumes of raw data in various formats, bothe structured and unstructured.
+- Data lakes rely on open source formats like Parquet, wich are widely recognized by numerous tools, ensuring seamless interoperability
+
+### Lakehouse Architecture
+- Vendors replaced the HDFS with cloud-based object storage. With object storage,the data blocks of a file are kept together as an object, together with its relevant meta data and a unique identifier.
+- Object storage are generally less expensive for storing large volumes of data, but it also scales more efficiently. Every major cloud provider offer such service, complete withe robust service-level agreements (SLAs) and options for geographical replication
+
+### Databricks
+- In 2013, the creatos of Spark founded a company named Databricks to support and monetize Spark's rapid growth
+- Databrticks opted for a cloud-only distribution called Databricks Cloud. Databricks started first with Amazon Web Services. In 2017, Databricks announced as a first-party service on Microsoft Azure via its integration, Azure Databricks.
+- Databricks is the leading force behind Apache Spark's roadmap and development. it offers a managed platform, whereby users get the full benefits of Spark, without the need to manage the underlying infrastructure.
+
+### Open Table format
+- Parquet: columnar storage open source file format used in Delta and Iceberg. Beneficial for analytical queries involving aggregations, filtering and sorting of large datasets. They enhance performance and efficiency by drastically reducing I/O operatioins and the amount of data loaded into memory. Columnar formats offer better data compression, wich saves storage space and reduces the costs associated with managing large volumes of data
+- Recognizing the critical need for improved transactional guarantees, enhanced metadata handling, and stronger data integrity with columnar storage formats, several projects were developed and later became open source, such as Delta Lake, Apche Hudi, and Apache Iceberg.
+- In 2019, Dabricks launched Delta Lake, wich brought ACID transactions, scalable metadata handling, and unified streaming and batch data processing, all while ensuring data integrity through scham enforcement and evolution.
+- Delta Lake exclusively utilizes the Parquet format for data storage and employs Snappy as the default compression algorithm
+- In 2024, Databricks acquire Tabular, a company that supports the apache Iceberg initiative. The mais objective of this acquisition is to enable compability between various lakehouse platforms.
+- Uniform: allow write data primarly to Delta Lake the asynchronously generate the metadata for Apache Iceberg and Hudi.

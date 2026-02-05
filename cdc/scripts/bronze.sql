@@ -13,4 +13,18 @@ CREATE TABLE IF NOT EXISTS IDENTIFIER(tabela) (
     updated_at TIMESTAMP,
     record_hash STRING
 )
-CLUSTER BY AUTO
+TBLPROPERTIES(
+    'delta.enableDeletionVectors' = 'true',
+    'delta.enableChangeDataFeed' = 'true',
+    'delta.enableRowTracking' = 'true',
+    'delta.deleteRetentionDuration' = '30 day',
+    'delta.logRetentionDuration' = '30 day',
+    'delta.autoOptimize.optimizeWrite' = 'true'
+)
+CLUSTER BY AUTO;
+
+OPTIMIZE IDENTIFIER(tabela) FULL;
+VACUUM IDENTIFIER(tabela) FULL;
+VACUUM IDENTIFIER(tabela) LITE;
+ANALYZE IDENTIFIER(tabela) COMPUTE STATISTICS FOR ALL COLUMNS;
+ANALYZE IDENTIFIER(tabela) COMPUTE DELTA STATISTICS;

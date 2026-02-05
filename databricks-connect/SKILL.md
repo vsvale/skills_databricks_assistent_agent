@@ -55,25 +55,57 @@ pip install --upgrade "databricks-connect==16.4.*"
 
 With Poetry, use the same version in `pyproject.toml` and `poetry add databricks-connect==16.4.*` (or `~16.4.0` for patch updates).
 
-### 4. Configure Authentication
+### 4. Configure Authentication & Compute
 
-**OAuth user-to-machine (U2M)** is the typical option for interactive use. Use the Databricks CLI to log in and create a profile that includes cluster (or serverless) config:
+**Option A: Automated Configuration (Recommended)**
+Use the provided script to authenticate and configure your compute (Cluster or Serverless) automatically.
 
 ```bash
-databricks auth login --configure-cluster --host https://<workspace-name>.cloud.databricks.com
+# Configure default profile
+python3 scripts/configure_databricks_connect.py
+
+# Or configure a specific profile/host
+python3 scripts/configure_databricks_connect.py <profile-name-or-url>
 ```
 
-Follow the prompts to pick or create a cluster and save the profile. Databricks Connect will use this profile by default.
+**Option B: Manual Configuration**
+1.  **Authenticate**:
+    ```bash
+    databricks auth login --configure-cluster --host <workspace-url>
+    ```
+2.  **Edit Profile (`~/.databrickscfg`)**:
+    Ensure your profile has *either* `cluster_id` OR `serverless_compute_id` (not both).
 
-For CI or headless use, use OAuth M2M or other supported auth and set the same parameters via env vars or a config file. See [references/REFERENCES.md](references/REFERENCES.md) for links.
+    *For Serverless:*
+    ```ini
+    [DEFAULT]
+    host = https://...
+    serverless_compute_id = auto
+    ```
+
+    *For Cluster:*
+    ```ini
+    [DEFAULT]
+    host = https://...
+    cluster_id = 1234-567890-abcdefg
+    ```
+
+For CI or headless use, set these parameters via environment variables. See [references/REFERENCES.md](references/REFERENCES.md).
 
 ### 5. Point to Compute (Cluster or Serverless)
+If you configured your profile in Step 4, Databricks Connect will use it automatically.
+If you need to override settings in code:
 
-If you did not use `--configure-cluster`, or you want to override the default, set connection options explicitly.
+**Cluster**:
+```python
+spark = DatabricksSession.builder.clusterId("...").getOrCreate()
+```
 
-**Cluster**: set `cluster_id` (or use the cluster ID from the profile).
-
-**Serverless**: set serverless compute options (workspace, resource ID, etc.) as in the [compute configuration docs](https://docs.databricks.com/aws/en/dev-tools/databricks-connect/cluster-config). Serverless is supported from Databricks Connect 15.1+; check version compatibility for your runtime.
+**Serverless**:
+```python
+# Requires databricks-connect >= 15.1
+spark = DatabricksSession.builder.serverless().getOrCreate()
+```
 
 ### 6. Validate the Connection
 

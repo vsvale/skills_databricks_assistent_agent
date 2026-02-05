@@ -1,66 +1,120 @@
-# Pre-requisitos
-- tabelas delta lake
-- chave natual ou surrogate key definida
-- colunas de auditoria: updated_at e  created_at ambas TIMESTAMP
-- coluna record_hash STRING para deteccao de mudancas
+---
+name: cdc
+description: Implement Change Data Capture (CDC) pipelines using Delta Live Tables (DLT) and Lakeflow. Covers SCD Type 1 (Overwrite) and SCD Type 2 (History) patterns using `APPLY CHANGES INTO`.
+---
 
-# BRONZE
-- Dados brutos
-- Pode contar duplicidade em id
-- mantem historico completo de mudancas
-- append-only
-- clustering por id, updated_at
-- gera o record_hash
-- gera a criptografia
-- Run  scripts/bronze_sql.sql or scripts/bronze_py.py
+# Change Data Capture (CDC)
 
-# SILVER
-- dados deduplicados, apenas 1 regristro por ID
-- aplica as operacoes I (insert), U (ypdate) e D (delete)
-- Deduplicacao via ROW_NUMBER() com QUALIFY = 1
-- watermark incremental
-- deteccao de mudanca via record_hash
-- colunas de auditoria silver_loaded_at e silver_updated_at
-- Run  scripts/silver_sql.sql or scripts/silver_py.py
+Change data capture (CDC) is a data integration pattern that captures changes made to data in a source system (inserts, updates, deletes). Processing a CDC feed allows for faster data propagation compared to reading entire datasets.
 
-# Gold
-- Agregacao diarias por status
-- KPIs de negocio
-- metricas financeias
-- Otimizada para dashboads e relatorios
-- Run  scripts/gold_sql.sql or scripts/gold_py.py
+## Key Concepts
 
-## MERGE (UPSERT)
-```sql
-MERGE INTO target
-USING source
-ON target.id = source.id
-WHEN MATCHED THEN UPDATE SET *
-WHEN NOT MATCHED THEN INSERT *
+### CDC Feed
+A list of changes from the source system. Delta tables generate their own CDC feed known as **Change Data Feed (CDF)**.
+Each row in a CDC feed typically contains:
+- **Data columns**: The actual data values.
+- **Operation**: The type of change (`INSERT`, `UPDATE`, `DELETE`).
+- **Sequence Number**: A value to deterministically order changes (e.g., timestamp or log sequence number) to handle out-of-order updates.
+
+### Slowly Changing Dimensions (SCD)
+When processing a CDC feed, you must decide how to handle history:
+
+| Type | Description | Use Case |
+|------|-------------|----------|
+| **SCD Type 1** | **Overwrite**: Keeps only the latest version of the data. No history is preserved. | Correcting errors, updating current contact info, non-critical fields. |
+| **SCD Type 2** | **History**: Maintains a full history of changes. New records are created for updates, often with `start_date`, `end_date`, and `is_current` flags. | Tracking evolution of data over time (e.g., address changes, status changes). |
+
+## Implementation with Delta Live Tables (DLT)
+
+The recommended approach for CDC on Databricks is using **Delta Live Tables (DLT)** with the `AUTO CDC` API (formerly `APPLY CHANGES INTO`).
+
+> **Note**: `AUTO CDC` replaces `APPLY CHANGES` APIs but shares the same syntax. Databricks recommends `AUTO CDC`.
+
+### Step 1: Prepare Sample Data
+Generate a sample CDC feed with `INSERT`, `UPDATE`, and `DELETE` operations, including out-of-order events.
+
+[generate_sample_cdc_data.py](scripts/generate_sample_cdc_data.py)
+
+### Step 2: Process CDC Feed (SCD Type 1 & 2)
+Use `dlt.apply_changes()` (or `AUTO CDC` syntax) to process the feed into target tables.
+
+[process_cdc_dlt.py](scripts/process_cdc_dlt.py)
+
+#### Sequencing Records
+To handle out-of-order data, you must specify a sequence column (e.g., timestamp).
+- **Multiple Columns**: Use a `STRUCT` to sequence by multiple columns (e.g., `STRUCT(timestamp, id)`).
+- **Behavior**: Orders by the first field, then the second to break ties.
+
+#### SCD Type 1 Example (Python)
+Updates records directly. No history retained.
+```python
+dlt.apply_changes(
+    target = "target_table",
+    source = "source_view",
+    keys = ["id"],
+    sequence_by = col("sequenceNum"),
+    stored_as_scd_type = 1
+)
 ```
 
-## DEDUPLICACAO com QUALIFY
-```sql
-SELECT * FROM tabela
-QUALIFY ROW_NUMBER() OVER (PARTITION BY id ORDER BY updated_at DESC) = 1
+#### SCD Type 2 Example (Python)
+Retains history. Databricks automatically adds and manages `__START_AT` and `__END_AT` columns.
+```python
+dlt.apply_changes(
+    target = "target_table",
+    source = "source_view",
+    keys = ["id"],
+    sequence_by = col("sequenceNum"),
+    stored_as_scd_type = 2
+)
 ```
 
-## WATERMARK INCREMENTAL
-Processa apenas registros novos ou alterados desde a ultima carga
+## Database Replication (Auto CDC)
+
+Replicate an external RDBMS table using a snapshot + continuous CDC feed using the `AUTO CDC` syntax in Lakeflow Pipelines.
+
+### APIs
+- **AUTO CDC**: Process changes from a change data feed (CDF).
+- **AUTO CDC FROM SNAPSHOT** (Python only): Process changes from database snapshots (periodic or historical).
+
+### Key Features
+- **Once Flow**: Initial hydration from a full snapshot (runs only once).
+- **Change Flow**: Continuous ingestion from a CDC feed.
+- **Auto CDC**: Automatically handles merges and SCD logic.
+
+### ⚠️ Critical Warnings
+- **Once Flow Behavior**: The once flow only runs one time. New files that are added to the snapshot location after pipeline creation are ignored.
+- **Data Loss Risk**: Performing a full refresh on the target streaming table re-runs the once flow. If the initial snapshot data in cloud storage has been removed, this results in data loss.
+
+### SQL Implementation
+Use `CREATE FLOW ... AS AUTO CDC ...`.
+
+[database_replication_sql.sql](scripts/database_replication_sql.sql)
+
 ```sql
-WHERE updated_at > ultimo_watermark (
+CREATE FLOW rdbms_orders_hydrate
+AS AUTO CDC ONCE INTO rdbms_orders ...
+
+CREATE FLOW rdbms_orders_continuous
+AS AUTO CDC INTO rdbms_orders ...
 ```
 
-## RECORD HASH
-Detecta mudancas de conteudo
-```sql
-sha2(concat_ws('||',cast(id as string),valos::string, nome),256)
+### Python Implementation
+Use `dp.create_auto_cdc_flow()` or `dp.create_auto_cdc_from_snapshot_flow()`.
+
+[database_replication_py.py](scripts/database_replication_py.py)
+[auto_cdc_from_snapshot.py](scripts/auto_cdc_from_snapshot.py)
+
+```python
+dp.create_auto_cdc_flow(
+    once = True,
+    target = "rdbms_orders",
+    ...
+)
 ```
 
-## VARIAVEIS SQL
-```sql
-DECLARE ultimo_watermark TIMESTAMP DEFAULT timestamp('2026-01-01');
-SET VAR ultimo_watermark = select max(updated_at) from silver);
-```
+## Legacy / Manual Implementation
+For manual CDC implementation using Spark SQL `MERGE` and window functions (non-DLT), see:
+[references/legacy_manual_cdc.md](references/legacy_manual_cdc.md)
 
-For more details, consult the references/REFERENCE.md.
+> **Warning**: `MERGE INTO` can produce incorrect results with out-of-sequence records or requires complex logic. `AUTO CDC` is recommended as it automatically handles sequencing.

@@ -1,5 +1,6 @@
-- IDENTIFIER clause: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-names-identifier-clause
-- CLUSTER BY clause: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-cluster-by
-- TBLPROPERTIES: https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-tblproperties
-- Table properties reference: https://docs.databricks.com/aws/en/delta/table-properties
-- Optimized writes: https://docs.databricks.com/aws/en/delta/tune-file-size#optimized-writes
+# References
+
+- [Delta Live Tables - AUTO CDC (Python)](https://docs.databricks.com/aws/en/ldp/cdc?language=Python)
+- [Delta Live Tables - AUTO CDC (SQL)](https://docs.databricks.com/aws/en/ldp/cdc?language=SQL)
+- [Delta Live Tables - APPLY CHANGES INTO (Legacy)](https://docs.databricks.com/en/delta-live-tables/cdc.html)
+- [Change Data Feed (CDF)](https://docs.databricks.com/en/delta/delta-change-data-feed.html)

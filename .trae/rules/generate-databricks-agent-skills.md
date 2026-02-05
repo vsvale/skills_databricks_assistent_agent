@@ -5,7 +5,7 @@ trigger: always_on
 ---
 name: generate_databricks_agent_skills
 description: Create skills to extend the Databricks Assistant with specialized capabilities. Skills follow the open standard of Agent Skills. Skills package domain-specific knowledge and workflows that the Assistant can load when relevant to perform specific tasks. Skills can include guidance, best practices, reusable code, and executable scripts. Skills should be tailored for domain-specific tasks. With skills, you can provide greater context (such as scripts, examples, and other resources) for a task than you can with instructions.
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Databricks Assistant Agent Skills
@@ -108,5 +108,10 @@ scripts/extract.py
   - Separate guidance from automation. Use markdown to explain intent and best practices, and scripts for repeatable actions. Keeping these concerns distinct makes skills easier to maintain and reuse
   - Always create the REFERENCES.md before any other references files
   - Prefer storing code snippets in the scripts/ folder and referencing them from SKILL.md to keep documentation concise and maintainable.
-
-- You can search docs in https://context7.com/
+  - You can search docs in https://context7.com/
+  - Always review the rules after creating and updating any skill
+  - When users share links, evaluate whether the linked content belongs in a different skill or reference file; if so, extract and integrate the relevant information into the appropriate location rather than keeping it in the current skill
+  - After integrating linked content, update the REFERENCES.md file to include the new content
+  - Avoid duplicating content. If the linked content already exists in REFERENCES.md, reference it instead of duplicating.
+  - After creating or updating a skill, reflect on what worked well and what could be improved. Document these insights by editing the .trae/skills/generate-databricks-agent-skills/SKILL.md file and adding them to the Lessons Learned section. This continuous improvement process helps refine skill development practices over time.
+  - After creating or updating a skill, analyze best practices and guidelines in it and review the .assistant_workspace_instructions.md file to include then, but respect the rules in .trae/rules/workspace-assistant-instructions.md
