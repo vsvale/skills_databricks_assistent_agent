@@ -75,3 +75,15 @@
   "notebook_path": "project_folder_name/src/databricks/workspace/01_etl_notebook"
 }
 ```
+
+## 3. Standard Job Template (YAML)
+Use this template for defining jobs in code/CI-CD. Note the `CreatedBy` tag and `slaHours`.
+
+See [scripts/template_job.yaml](../scripts/template_job.yaml) for the full file.
+
+```yaml
+job:
+  jobName: "etl_bronze_silver_tb_jobs_customers"
+  description: "Processa dados de clientes de Bronze para Silver"
+  # ... (see linked file for full content)
+```

@@ -16,8 +16,23 @@ Choose the strategy based on the table status:
 
 See [references/strategy.md](references/strategy.md) for detailed scenarios.
 See [references/unity_catalog_standards.md](references/unity_catalog_standards.md) for catalog, schema, and volume standards.
+See [references/git_standards.md](references/git_standards.md) for branching and commit standards.
 
-## 2. Core Migration Patterns (Before -> After)
+## 2. Data Design Standards
+- **Medallion Architecture**: Strict separation of RAW, BRONZE, SILVER, GOLD layers.
+- **Control Fields**: All tables must include standard audit columns (`dt_ingestion`, `source_processing`, etc.).
+- **Table Naming**: Follow `tb_<name>_<layer>` convention.
+- **Clustering**: Use `CLUSTER BY` instead of `PARTITIONED BY`.
+
+See [references/data_design_standards.md](references/data_design_standards.md) for full specifications.
+
+## 3. Core Migration Patterns (Before -> After)
+
+### Reusable Migration Classes
+- Use standardized classes for batch processing to ensure consistency and reduce boilerplate.
+- **RawToBronzeProcessor**: Handles schema enforcement and metadata columns.
+- **BronzeToSilverProcessor**: Handles deduplication and transformations.
+- See [references/code_migration.md](references/code_migration.md#5-advanced-migration-patterns-reusable-classes) for implementation details.
 
 ### Raw Layer: S3 Paths to Volumes
 - **Before**: Constructing S3 paths manually (`s3://bucket/path`).
@@ -40,27 +55,29 @@ See [references/unity_catalog_standards.md](references/unity_catalog_standards.m
 
 See [references/code_migration.md](references/code_migration.md) for detailed code snippets.
 
-## 3. Critical Code Updates
+## 4. Critical Code Updates
 - **Metadata**: Replace `input_file_name()` with `col("_metadata.file_path")`.
 - **Streaming**: Replace `Trigger.Once` with `Trigger.AvailableNow`.
 - **Explicit Writers**: Replace custom wrappers (`create_stream_writer`) with native `.writeStream` syntax.
 - **File Deletion**: Replace `dbutils.fs.rm` on tables with `TRUNCATE` or SQL operations.
 - **Job Config**: Update `job.json` to use **Cluster Policies** (`policy_id`) and **Instance Pools** (`instance_pool_id`) instead of raw AWS attributes. Update `git_source` to the Unified Repo. See [references/job_config_migration.md](references/job_config_migration.md).
 
-## 4. Best Practices
+## 5. Best Practices
 - **Code Style**: Use `()` for line breaks, standard imports, no global variables.
 - **Performance**: Use `.withColumns` instead of chained `.withColumn`. Remove `.count()`/`display()`.
 - **Temp Files**: Use `/temp/` (driver) or Volumes for temp data, never `dbfs:/FileStore`.
 
 See [references/best_practices.md](references/best_practices.md) for the full list.
 
-## 5. Anti-Patterns
+## 6. Anti-Patterns
 - **Forbidden**: Using `legacy_hive_catalog` in production jobs.
 - **Forbidden**: Hardcoded S3 paths in Unity-enabled clusters (unless using External Locations explicitly).
 - **Forbidden**: `%run` for orchestration (use Job Tasks).
 - **Forbidden**: Storing production code in Personal Workspace.
 
-## 6. Examples
+## 7. Examples
 See [scripts/](scripts/) for full example files.
 - `scripts/before_00_operations.py` vs `scripts/after_00_operations.py`
+- `scripts/utils_migration.py`: Reusable classes for batch ETL (`RawToBronzeProcessor`, `BronzeToSilverProcessor`).
+- `scripts/template_job.yaml`: Standard job configuration template.
 

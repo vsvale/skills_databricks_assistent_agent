@@ -1,0 +1,18 @@
+job:
+  jobName: "etl_bronze_silver_tb_jobs_customers"
+  description: "Processa dados de clientes de Bronze para Silver"
+  owner: "data-engineering-team"
+  slaHours: 2
+  tags:
+    CreatedBy: "ECRED"  # Mandatory for cost tracking
+unityCatalog:
+  catalog: "ecred_prd"
+  sourceSchema: "bronze"
+  targetSchema: "silver"
+spark:
+  appName: "CustomerProcessing"
+  configs:
+    spark.sql.adaptive.enabled: "true"
+    spark.sql.adaptive.coalescePartitions.enabled: "true"
+    spark.sql.shuffle.partitions: "auto"
+    spark.databricks.delta.autoCompact.enabled: "true"

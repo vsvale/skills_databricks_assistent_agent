@@ -48,6 +48,7 @@ This skill tracks lessons learned and best practices for creating and maintainin
 - **Modern Tooling**: Explicitly recommend modern Databricks features (Volumes, Genie, Lakeflow, Predictive Optimization) to prevent the Assistant from suggesting legacy or less efficient workarounds.
 - **Safety Rails**: Implement strict prohibitions on dangerous operations (e.g., "No DROP TABLE", "No explicit VACUUM on Managed Tables") to protect data integrity.
 - **Environment Specifics**: Record specific environment constraints (e.g., "Schema X is read-only for User Y", "Use function Z for Pool IDs") to make the Assistant "aware" of the local infrastructure reality.
+- **Team Interaction Protocols**: Explicitly document cross-team protocols (e.g., "Product Team must consult Domain Team for schema changes") to ensure the Assistant advises users on correct organizational governance processes.
 - **Conflict Resolution**: When new instructions contradict old ones (e.g., "Use USING DELTA" vs "Delta is default"), explicitly update the instruction to the latest best practice rather than keeping ambiguous rules.
 - **Modern Feature Adoption**: Proactively add instructions for new high-performance features (like `VARIANT` type or `read_files()`) to ensure users leverage the latest platform capabilities, even if they don't explicitly ask for "performance tuning".
 - **Anti-Patterns**: Explicitly list anti-patterns (e.g., "Never use `input_file_name()`") alongside the recommended pattern (`_metadata`) to prevent regression to legacy habits.
@@ -61,6 +62,11 @@ This skill tracks lessons learned and best practices for creating and maintainin
 - **Robustness Defaults**: Enforce robust defaults in instructions (e.g., `rescuedDataColumn` for all file reads) to "shift left" on data quality issues, making generated code production-ready by default.
 - **Layer-Specific Architecture**: Define rules per architectural layer (Bronze/Silver/Gold) to help the Assistant generate context-aware code that respects layer responsibilities (e.g., "Bronze is Append-Only").
 - **Documentation Standards**: Enforce mandatory documentation fields (Source, Target, Ingestion Type) in code artifacts (notebooks) to ensure consistent metadata across the codebase.
+- **Data Design Enforcement**: Instructions should enforce specific data design patterns like Control Fields (`dt_ingestion`) and Naming Conventions (`tb_...`) which are often overlooked in general coding advice.
+- **Configuration Hygiene**: Explicitly instruct to remove legacy configuration (AWS keys, instance profiles) when migrating jobs to ensure security and compliance with new platform standards.
+- **Reference Exhaustion**: When analyzing a domain (like Migration), systematically analyze *all* associated reference files (git, compute, tagging, etc.) to capture the full spectrum of governance rules, not just code patterns.
+- **Tagging Governance**: Enforce the full list of mandatory tags (e.g., BU, CreatedBy, JobType) in instructions to ensure FinOps compliance across all generated job configurations.
+- **Infrastructure Constraints**: Explicitly document cluster mode requirements (Standard/Dedicated) and prohibited storage paths (`dbfs:/FileStore`) to prevent the Assistant from suggesting non-compliant infrastructure.
 
 ### Interaction Tips (for Users)
 - **Find Tables**: Encourage using phrases like "Find tables related to..." or `/findTables` to help the Assistant discover relevant data context before generating queries.

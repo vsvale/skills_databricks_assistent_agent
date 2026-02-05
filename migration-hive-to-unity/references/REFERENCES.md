@@ -5,7 +5,9 @@
 | [code_migration.md](code_migration.md) | Detailed code patterns for migrating Raw, Bronze, and Silver layers (Before/After). |
 | [best_practices.md](best_practices.md) | Coding standards, performance tips, and anti-patterns. |
 | [strategy.md](strategy.md) | Migration strategies (Copy Only, Repos, Workspace) based on table characteristics. |
+| [data_design_standards.md](data_design_standards.md) | Medallion Architecture, Control Fields, Table Naming, and Clustering standards. |
 | [unity_catalog_standards.md](unity_catalog_standards.md) | Consolidated standards for Catalogs, Schemas, Managed Tables, and Volumes. |
+| [git_standards.md](git_standards.md) | Git workflow, branching strategy, and Conventional Commits standards. |
 | [compute_requirements.md](compute_requirements.md) | Cluster access modes (Standard/Dedicated) and requirements. |
 | [tagging_standards.md](tagging_standards.md) | Mandatory tagging standards for Jobs and Clusters. |
 | [unified_repo_structure.md](unified_repo_structure.md) | Standardized directory structure for Git Repositories. |

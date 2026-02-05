@@ -1,252 +1,76 @@
 # Code Migration Patterns
 
-## 0. Initial Setup & Operations
-- **Explicit is better than implicit**.
-- **Unified Repositories**: Avoid copy-paste; use unified repos.
-- **Stream Writers**: Use explicit `.writeStream` instead of helper functions like `create_stream_writer`.
-
-**Pattern: Explicit Stream Writer**
+## 1. Reading Data (Input)
+**Pattern: S3 Path to Volume Path**
 *Before*:
 ```python
-bronzeWriter = create_stream_writer_liquid_cluster(
-    dataframe=df_transformed_Bronze,
-    checkpoint=bronzeCheckpoint,
-    name=namedBronzeStream,
-    availableNow=True,
-    mergeSchema=True,
-    mode="append"
-)
-bronzeWriter.start(bronzePath).awaitTermination()
+df = spark.read.load("s3://bucket/path/to/data")
 ```
 *After*:
 ```python
-bronzeWriter = (df_transformed_Bronze.writeStream
-                .outputMode("append")
-                .option("checkpointLocation", bronzeCheckpoint)
-                .queryName(namedBronzeStream)
-                .trigger(availableNow=True)
-                .option("mergeSchema", True)
-)
-bronzeWriter.toTable(bronzeTable).awaitTermination()
+df = spark.read.load("/Volumes/catalog/schema/volume/path/to/data")
 ```
+*Note*: Ensure the Volume is mounted/created in Unity Catalog.
 
-**Pattern: Reprocess & Truncate (Volumes vs Tables)**
+**Pattern: External Table to Managed Table**
 *Before*:
 ```python
-spark.sql(f"TRUNCATE TABLE delta.`{bronzePath}`")
-dbutils.fs.rm(bronzeCheckpoint, True)
+df = spark.read.table("legacy_db.table_name")
+# or
+df = spark.read.load("s3://bucket/external_table_path")
 ```
 *After*:
 ```python
-# 1. Clean Checkpoint in Volume
-dbutils.fs.rm(bronzeCheckpoint, True)
-dbutils.fs.mkdirs(bronzeCheckpoint) # Re-create empty directory
-
-# 2. Truncate Managed Table
-spark.sql(f"TRUNCATE TABLE {bronzeTable}")
+df = spark.read.table("catalog.schema.table_name")
 ```
 
-**Pattern: Helper Function Refactoring (Wrapper Update)**
-If you use a shared wrapper function, update it to support `.toTable()`:
-
+## 2. Writing Data (Output)
+**Pattern: Path-based Write to Table-based Write**
 *Before*:
 ```python
-def create_stream_writer(dataframe, checkpoint, name, trigger_once, mergeSchema):
-    # ... setup stream_writer ...
-    return stream_writer # Returns DataStreamWriter
-# Usage: create_stream_writer(...).start(path)
+df.write.format("delta").save("s3://bucket/output_path")
 ```
 *After*:
 ```python
-def create_stream_writer(dataframe, checkpoint, name, trigger_once, mergeSchema, toTable):
-    # ... setup stream_writer ...
-    return stream_writer.toTable(toTable) # Returns StreamingQuery
-# Usage: create_stream_writer(..., toTable="catalog.schema.table")
+df.write.format("delta").saveAsTable("catalog.schema.output_table")
 ```
 
-**Pattern: Namespace Migration (Hive to Unity)**
+**Pattern: Streaming Checkpoints**
 *Before*:
 ```python
-spark.catalog.tableExists(f"db_auth_silver.tb_{table}")
-spark.sql(f"select * from db_auth_silver.tb_{table}")
+checkpoint_path = "s3://bucket/checkpoints/job_name"
 ```
 *After*:
 ```python
-spark.catalog.tableExists(f"auth_prd.silver.tb_{table}")
-spark.sql(f"select * from auth_prd.silver.tb_{table}")
+# Create a 'checkpoints' volume in your schema
+checkpoint_path = "/Volumes/catalog/schema/checkpoints/job_name"
 ```
 
-
-**Pattern: Shared Utils**
+## 3. Metadata Columns
+**Pattern: Input File Name**
 *Before*:
 ```python
-%run /Users/ecs-databricks@br.experian.com/jobs/utils
+from pyspark.sql.functions import input_file_name
+df = df.withColumn("filename", input_file_name())
+```
+*After (Autoloader/Volumes)*:
+```python
+from pyspark.sql.functions import col
+# Available automatically in Autoloader
+df = df.withColumn("filename", col("_metadata.file_path"))
+```
+
+## 4. Silver Layer Processing
+**Pattern: Reading Bronze (Stream)**
+*Before*:
+```python
+# Custom helper to read from S3 path
+df = read_stream_delta(spark, "s3://bucket/bronze/table")
 ```
 *After*:
 ```python
-import sys
-sys.path.append("/Workspace/Shared/ecs-dataops-shared-utils/")
-from util_import import *
+df = spark.readStream.table("catalog.schema.bronze_table")
 ```
-
-## 1. RAW Layer (S3 -> Volumes)
-- **Rule**: Buckets `Raw` and `Sensitive` become **Volumes**.
-- **Path Construction**: Construct the full path first, then check if it's a Delta table.
-
-**Pattern: Path Definition**
-*Before*:
-```python
-bucketRaw = f"ecs-observability-datadog-logging-prd/auth/back"
-rawPath   = "s3://{}".format(bucketRaw)
-```
-*After*:
-```python
-# Check existing volumes first (see script)
-rawPath = "/Volumes/observability_prd/raw/ecs-observability-datadog-logging-prd/auth/back/"
-```
-
-**Pattern: Read Stream (Path vs Volume)**
-*Before*:
-```python
-rawDF = read_stream_raw(spark, rawPathDay, schema_bronze_back)
-```
-*After*:
-```python
-rawDF = (
-  spark.readStream.format("json")
-        .schema(schema_bronze_back)
-        .options(maxBytesPerTrigger=str(5 * 1024 * 1024 * 1024))
-        .load(rawPathDay) # rawPathDay is now a Volume path
-)
-```
-
-**Pattern: Autoloader with SQS**
-*Before*:
-```python
-.option("cloudFiles.queueUrl", sqsPath)
-```
-*After*:
-```python
-.option("cloudFiles.queueUrl", sqsPath)
-.option("databricks.serviceCredential", "unity-xxxx-service-credential")
-```
-
-**Pattern: Path to Table (Read)**
-*Before*:
-```python
-goldPath = "s3://bucket/path"
-goldTable = DeltaTable.forPath(spark, goldPath)
-# OR
-bronzeDF = read_stream_delta(spark, bronzePath)
-```
-*After*:
-```python
-goldTable = spark.table('corp_prd.sensitive.table_name')
-# OR
-bronzeDF = spark.readStream.table("auth_prd.bronze.tb_source_back")
-```
-
-**Pattern: Table Creation (DDL)**
-*Before*:
-```python
-# Checks DeltaTable.isDeltaTable... then:
-spark.sql(f"""
-    CREATE TABLE IF NOT EXISTS {tableName} ({schema})
-    USING delta LOCATION '{silverPath}'
-    CLUSTER BY (col)
-""")
-```
-*After*:
-```python
-# Managed Table - No LOCATION
-spark.sql(f"""
-    CREATE TABLE IF NOT EXISTS auth_prd.silver.tb_{name} ({schema})
-    CLUSTER BY (col)
-""")
-```
-
-**Pattern: SQL Reference**
-*Before*:
-```sql
-select * from delta.`s3a://bucket/path`
-```
-*After*:
-```sql
-select * from catalog.schema.table
-```
-
-**Pattern: Write to Table**
-*Before*:
-```python
-df.write.mode("overwrite").save(path)
-```
-*After*:
-```python
-df.write.mode("overwrite").saveAsTable("catalog.schema.table")
-```
-
-**Pattern: Liquid Clustering (Replace PartitionBy)**
-*Before*:
-```python
-df.write.partitionBy("date").save(path)
-```
-*After*:
-```python
-df.write.saveAsTable("catalog.schema.table")
-spark.sql("ALTER TABLE catalog.schema.table CLUSTER BY AUTO")
-# Or in CTAS: CLUSTER BY (col)
-```
-
-**Pattern: Optimize and Vacuum**
-*Before*:
-```python
-spark.sql(f"OPTIMIZE delta.`{path}`")
-DeltaTable.forPath(spark, path).vacuum()
-```
-*After*:
-```python
-spark.sql(f"OPTIMIZE catalog.schema.table")
-spark.sql(f"VACUUM catalog.schema.table")
-```
-
-## 2. BRONZE Layer (Managed Tables)
-- **Rule**: Use **Managed Tables** (default). Do not use External Tables unless specified.
-
-**Pattern: Path to Table**
-*Before*:
-```python
-bronzePath = "s3://serasaexperian-{}".format(bucketBronze)
-```
-*After*:
-```python
-bronzePath = f"auth_prd.bronze.tb_{source}_back"
-```
-
-**Pattern: Metadata Replacement**
-*Before*:
-```python
-.withColumn("file_name_raw", input_file_name())
-```
-*After*:
-```python
-.withColumn("file_name_raw", col("_metadata.file_path"))
-```
-
-## 3. Checkpoints (S3 -> Managed Volumes)
-- **Rule**: Every catalog has a `checkpoints` managed volume in Bronze, Silver, Gold.
-
-**Pattern: Checkpoint Path**
-*Before*:
-```python
-bronzeCheckpoint = "s3://serasaexperian-ecs-datalakehouse-prd-checkpoints/..."
-```
-*After*:
-```python
-bronzeCheckpoint = f"/Volumes/auth_prd/bronze/checkpoints/ecs-datalakehouse-prd-checkpoints/..."
-```
-
-## 4. SILVER Layer
-- **Rule**: Bronze Path -> Bronze Table; Silver Path -> Silver Table.
 
 **Pattern: Merge (ForPath vs ForName)**
 *Before*:
@@ -266,4 +90,42 @@ microBatchOutputDF._jdf.sparkSession().sql(f"MERGE INTO delta.`{path}`...")
 *After*:
 ```python
 microBatchOutputDF.sparkSession.sql(f"MERGE INTO {table_name}...")
+```
+
+## 5. Advanced Migration Patterns: Reusable Classes
+Encapsulate logic in classes for reusability and testing.
+
+See [scripts/utils_migration.py](../scripts/utils_migration.py) for the full implementation of:
+- `RawToBronzeProcessor`: Batch ingestion from Raw to Bronze with control fields.
+- `BronzeToSilverProcessor`: Batch processing from Bronze to Silver with standard cleaning.
+
+**Example Usage:**
+```python
+from utils_migration import RawToBronzeProcessor
+
+processor = RawToBronzeProcessor(spark)
+processor.process(
+    source_path="/Volumes/catalog/schema/volume/data",
+    target_table="catalog.schema.tb_data_bronze",
+    source_table_name="tb_data",
+    file_format="json"
+)
+```
+
+## 6. Security & PII
+**Pattern: Column Encryption**
+Use the platform cryptography library for PII fields. Do not persist unencrypted PII in Bronze/Silver.
+
+```python
+try:
+    from lake_crypto import encrypt, decrypt
+except ImportError:
+    # Handle missing library in local/dev env
+    print("Crypto lib not found")
+    def encrypt(x): return x
+    def decrypt(x): return x
+
+# Usage
+# encrypted_value = encrypt(sensitive_data)
+# decrypted_value = decrypt(encrypted_value)  # Only for processing; do not persist in clear text
 ```
