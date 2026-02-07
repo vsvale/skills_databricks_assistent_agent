@@ -39,10 +39,28 @@ SELECT * FROM table
 QUALIFY ROW_NUMBER() OVER (PARTITION BY id ORDER BY updated_at DESC) = 1
 ```
 
-## Incremental Watermark
-Process only new or changed records since the last load:
+## Incremental Watermark (Batch & Streaming)
+Process only new or changed records since the last load.
+
+### Simple Filter
 ```sql
 WHERE updated_at > last_watermark
+```
+
+### Modern SQL Scripting (Batch)
+Use `DECLARE` and `SET VAR` to dynamically capture the high-water mark from the target table before ingesting new data. This is useful for scheduled batch jobs.
+
+```sql
+-- 1. Initialize variable (handle cold start with default)
+DECLARE last_update_at TIMESTAMP DEFAULT timestamp("1900-01-01");
+
+-- 2. Get the max timestamp from target
+SET VAR last_update_at = (SELECT max(update_at) from main.default.tb_silver);
+
+-- 3. Ingest only new records
+INSERT INTO main.default.tb_silver
+SELECT * FROM main.default.tb_bronze 
+WHERE update_at > last_update_at;
 ```
 
 ## Record Hash

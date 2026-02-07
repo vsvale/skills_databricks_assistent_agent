@@ -13,6 +13,7 @@
 - [Deletion Vectors](https://docs.databricks.com/aws/en/delta/deletion-vectors)
 - [SQL Syntax: QUALIFY Clause](https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-qry-select-qualify)
 - [SQL Syntax: SELECT Statement](https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-qry-select)
+- [SQL Scripting: DECLARE & SET VAR](https://docs.databricks.com/en/sql/language-manual/sql-ref-syntax-ddl-declare-variable.html)
 - [SQL Function: row_number](https://docs.databricks.com/aws/en/sql/language-manual/functions/row_number)
 - [PySpark Function: row_number](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.row_number.html)
 

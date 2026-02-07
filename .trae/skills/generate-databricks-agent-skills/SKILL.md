@@ -39,4 +39,5 @@ This skill tracks lessons learned and best practices for creating and maintainin
 - **Code Extraction**: Extract long, complex code blocks (like manual SCD Type 2 SQL logic or foreachBatch functions) from markdown files into dedicated scripts. This keeps documentation clean and reduces copy-paste errors.
 - **Mandatory Rule Enforcement**: When a rule is critical (e.g., updating lessons learned), mark it as **MANDATORY** and explicitly state that it is **NOT** optional to ensure strict adherence.
 - **SQL vs Python Parity**: Explicitly document syntax differences (e.g., `QUALIFY` being SQL-only) to prevent users from attempting unsupported operations in PySpark. Always provide the correct alternative (like `window.filter` for PySpark).
+- **Modern SQL Scripting**: When documenting batch SQL workflows, prefer modern `DECLARE`/`SET VAR` syntax for variables (Watermarking) over legacy widgets or Python interpolation, as it promotes pure SQL pipelines.
 
