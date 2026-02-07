@@ -11,6 +11,10 @@
 - [Delta Live Tables - APPLY CHANGES INTO (Legacy)](https://docs.databricks.com/en/delta-live-tables/cdc.html)
 - [Liquid Clustering for Delta Tables](https://docs.databricks.com/aws/en/delta/clustering)
 - [Deletion Vectors](https://docs.databricks.com/aws/en/delta/deletion-vectors)
+- [SQL Syntax: QUALIFY Clause](https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-qry-select-qualify)
+- [SQL Syntax: SELECT Statement](https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-qry-select)
+- [SQL Function: row_number](https://docs.databricks.com/aws/en/sql/language-manual/functions/row_number)
+- [PySpark Function: row_number](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.row_number.html)
 
 ## Release Notes & Updates (2025-2026)
 - [Databricks Release Notes Overview](https://docs.databricks.com/aws/en/release-notes/)
@@ -30,6 +34,7 @@
 - [Merge in Python: Syntax & Performance Comparison](https://databrickster.medium.com/merge-in-python-which-one-has-the-nicest-syntax-and-is-the-fastest-845799729c23)
 - [Delta Lake Merge Deep Dive (2023-02-14)](https://delta.io/blog/2023-02-14-delta-lake-merge/)
 - [Databricks Community: Merge Deep Dive (Internals)](https://community.databricks.com/t5/technical-blog/merge-deep-dive/ba-p/111190)
+- [Databricks Community: QUALIFY Clause (Highly Selective SQL)](https://community.databricks.com/t5/technical-blog/highly-selective-sql-refined-beyond-the-where/ba-p/64459)
 
 ## Internal Guides
 - [dlt_cdc_tutorial.md](dlt_cdc_tutorial.md): Step-by-step tutorial for building CDC pipelines with DLT.

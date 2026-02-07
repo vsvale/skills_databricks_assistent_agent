@@ -64,6 +64,8 @@ The standard pattern for streaming upserts into a Delta table is using `foreachB
 
 ### Code Example (Python)
 
+> **Note**: PySpark DataFrames do not support the `QUALIFY` clause. The example below uses the standard Window function approach.
+
 [streaming_merge_cdc.py](../scripts/streaming_merge_cdc.py)
 
 ```python

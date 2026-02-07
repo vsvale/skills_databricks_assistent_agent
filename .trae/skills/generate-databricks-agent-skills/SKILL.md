@@ -38,4 +38,5 @@ This skill tracks lessons learned and best practices for creating and maintainin
 - **Tutorial Script Separation**: When creating tutorials, provide the full, executable code in `scripts/` (e.g., `scripts/dlt_cdc_pipeline.py`) alongside the step-by-step markdown explanation. This allows users to immediately run the solution while reading about it.
 - **Code Extraction**: Extract long, complex code blocks (like manual SCD Type 2 SQL logic or foreachBatch functions) from markdown files into dedicated scripts. This keeps documentation clean and reduces copy-paste errors.
 - **Mandatory Rule Enforcement**: When a rule is critical (e.g., updating lessons learned), mark it as **MANDATORY** and explicitly state that it is **NOT** optional to ensure strict adherence.
+- **SQL vs Python Parity**: Explicitly document syntax differences (e.g., `QUALIFY` being SQL-only) to prevent users from attempting unsupported operations in PySpark. Always provide the correct alternative (like `window.filter` for PySpark).
 

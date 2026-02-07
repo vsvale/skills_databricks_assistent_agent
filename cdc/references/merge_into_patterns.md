@@ -108,19 +108,21 @@ Older syntax using a subquery (replaced by `QUALIFY`):
 ```sql
 SELECT * FROM (
   SELECT *, 
-    rank() OVER (PARTITION BY id ORDER BY updated_at DESC) as rank
+    row_number() OVER (PARTITION BY id ORDER BY updated_at DESC) as rn
   FROM source_view
 )
-WHERE rank = 1
+WHERE rn = 1
 ```
 
 #### Python Pattern (Drop Duplicates)
+> **Note**: PySpark DataFrames do not support the `QUALIFY` clause. You must use `withColumn` and `filter` (or `dropDuplicates` if strict ordering isn't required).
+
 ```python
 # Keep only the latest record per ID
 deduped_source = sourceDF.withColumn(
-    "rank", 
-    expr("rank() OVER (PARTITION BY id ORDER BY updated_at DESC)")
-).filter("rank = 1").drop("rank")
+    "rn", 
+    expr("row_number() OVER (PARTITION BY id ORDER BY updated_at DESC)")
+).filter("rn = 1").drop("rn")
 
 deltaTable.alias("t").merge(
     deduped_source.alias("s"),

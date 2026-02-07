@@ -16,6 +16,7 @@ def merge_cdc_feed(micro_batch_df, batch_id):
     window_spec = Window.partitionBy("id").orderBy(col("sequenceNum").desc())
     
     # 2. Deduplicate the micro-batch (keep rank 1)
+    # Note: PySpark DataFrames do not support QUALIFY. Use window functions with filter.
     deduped_batch = micro_batch_df.withColumn("row_num", row_number().over(window_spec)) \
         .filter(col("row_num") == 1) \
         .drop("row_num")
