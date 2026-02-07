@@ -113,5 +113,5 @@ scripts/extract.py
   - When users share links, evaluate whether the linked content belongs in a different skill or reference file; if so, extract and integrate the relevant information into the appropriate location rather than keeping it in the current skill
   - After integrating linked content, update the REFERENCES.md file to include the new content
   - Avoid duplicating content. If the linked content already exists in REFERENCES.md, reference it instead of duplicating.
-  - After creating or updating a skill, reflect on what worked well and what could be improved. Document these insights by editing the .trae/skills/generate-databricks-agent-skills/SKILL.md file and adding them to the Lessons Learned section. This continuous improvement process helps refine skill development practices over time.
+  - **MANDATORY**: Always use lessons learned in `.trae/skills/generate-databricks-agent-skills/SKILL.md`. Always update the lessons learned after each new update and creation. This is **NOT** optional: YOU MUST USE AND UPDATE THE LESSONS LEARNED, SKILL AND RULES.
   - After creating or updating a skill, analyze best practices and guidelines in it and review the .assistant_workspace_instructions.md file to include then, but respect the rules in .trae/rules/workspace-assistant-instructions.md

@@ -89,20 +89,29 @@ If you simply merge a raw CDC feed, you may get `DELTA_MULTIPLE_SOURCE_ROW_MATCH
 ### The Solution: Deduplicate Source
 You must preprocess the source to retain only the **latest change** per key before merging.
 
-#### SQL Pattern (Rank / Row_Number)
+#### SQL Pattern (QUALIFY Clause)
+The `QUALIFY` clause is the most concise and modern way to filter window functions in Databricks SQL.
+
 ```sql
 MERGE INTO target t
 USING (
-  SELECT * FROM (
-    SELECT *, 
-      rank() OVER (PARTITION BY id ORDER BY updated_at DESC) as rank
-    FROM source_view
-  )
-  WHERE rank = 1
+  SELECT * FROM source_view
+  QUALIFY row_number() OVER (PARTITION BY id ORDER BY updated_at DESC) = 1
 ) s
 ON t.id = s.id
 WHEN MATCHED THEN UPDATE SET *
 WHEN NOT MATCHED THEN INSERT *
+```
+
+#### SQL Pattern (Legacy Subquery)
+Older syntax using a subquery (replaced by `QUALIFY`):
+```sql
+SELECT * FROM (
+  SELECT *, 
+    rank() OVER (PARTITION BY id ORDER BY updated_at DESC) as rank
+  FROM source_view
+)
+WHERE rank = 1
 ```
 
 #### Python Pattern (Drop Duplicates)

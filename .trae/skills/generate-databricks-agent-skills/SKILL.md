@@ -13,7 +13,11 @@ This skill tracks lessons learned and best practices for creating and maintainin
 - **Update Task**: After creating or updating *any* skill, you MUST reflect on the process and record new insights in the "Lessons Learned" section below.
 
 ## Lessons Learned
-
+- **Documentation Consultation**: Always consult the documentation in `https://docs.databricks.com/llms.txt` or `https://context7.com/` and the following release notes to get the most recent releases relevant to the skill being updated:
+  - `https://docs.databricks.com/aws/en/release-notes/dlt/2026`
+  - `https://docs.databricks.com/aws/en/release-notes/serverless/`
+  - `https://docs.databricks.com/aws/en/sql/release-notes/2025`
+  - `https://docs.databricks.com/aws/en/release-notes/product/`
 - **Move Legacy Content**: When modernizing a skill, move outdated but potentially useful patterns (like manual SQL CDC) to a dedicated file in the `references/` folder. This keeps the main `SKILL.md` focused on the recommended approach while preserving knowledge.
 - **Dual Language Examples**: For core platform capabilities (like Auto CDC), providing both SQL and Python implementation scripts maximizes the skill's utility across different user personas.
 - **Self-Contained Data Generation**: Including a script to generate sample data (e.g., `generate_sample_cdc_data.py`) is critical for allowing users and agents to verify and test the skill immediately.
@@ -33,4 +37,5 @@ This skill tracks lessons learned and best practices for creating and maintainin
 - **Reference Segmentation**: For skills with distinct alternative implementations (e.g., DLT Auto CDC vs Manual SQL Merge), separate the alternative/manual patterns into their own reference files (e.g., `references/merge_into_patterns.md`) to keep the main `SKILL.md` focused on the primary recommendation.
 - **Tutorial Script Separation**: When creating tutorials, provide the full, executable code in `scripts/` (e.g., `scripts/dlt_cdc_pipeline.py`) alongside the step-by-step markdown explanation. This allows users to immediately run the solution while reading about it.
 - **Code Extraction**: Extract long, complex code blocks (like manual SCD Type 2 SQL logic or foreachBatch functions) from markdown files into dedicated scripts. This keeps documentation clean and reduces copy-paste errors.
+- **Mandatory Rule Enforcement**: When a rule is critical (e.g., updating lessons learned), mark it as **MANDATORY** and explicitly state that it is **NOT** optional to ensure strict adherence.
 
